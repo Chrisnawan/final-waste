@@ -208,7 +208,7 @@ st.markdown(
         ♻️ Smart Waste Classification Dashboard
     </h1>
 
-  # SESUDAH
+  
         <p style="
             font-size:28px;
             margin-top:0px;
