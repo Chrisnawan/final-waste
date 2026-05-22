@@ -140,39 +140,33 @@ def show_image(filename, caption, description=""):
                 use_container_width=True
             )
 
-        with col2:
-            clean_description = (
-                description
-                .replace("**Insight:**", "")
-                .replace("</div>", "")
-                .replace("<div>", "")
-                .replace("```", "")
-                .strip()
+       with col2:
+        clean_description = (
+            description
+            .replace("**Insight:**", "")
+            .replace("</div>", "")
+            .replace("<div>", "")
+            .replace("```", "")
+            .strip()
             )
-            st.markdown(
-                f"""
-                <p style="
-                    font-size:35px;
-                    line-height:2;
-                    text-align:justify;
-                    color:white;
-                    background-color:transparent;
-                    padding-top:10px;
-                    margin:0;
-                    display:block;
-                    width:100%;
-                ">
-                    {clean_description}
-                </p>
-                """,
+        st.markdown(
+            f"""
+            <p style="
+                font-size:18px;
+                line-height:1.8;
+                text-align:justify;
+                color:#1a1a1a;
+                background-color:transparent;
+                padding-top:10px;
+                margin:0;
+                display:block;
+                width:100%;
+            ">
+                {clean_description}
+            </p>
+            """,
                 unsafe_allow_html=True
-            )
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.divider()
-
-    else:
-        st.warning(f"Gambar tidak ditemukan: {image_path}")
+    )
 # ==========================================
 # PREDICTION FUNCTION
 # ==========================================
