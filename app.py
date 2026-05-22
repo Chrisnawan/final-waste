@@ -119,11 +119,7 @@ trash_map = {
     "paper_cups": "Kertas / Campuran"
 }
 
-# ==========================================
-# HELPER: SHOW IMAGE WITH SIDE INSIGHT
-# ==========================================
 def show_image(filename, caption, description=""):
-
     image_path = ASSET_DIR / filename
 
     st.markdown(
@@ -136,7 +132,6 @@ def show_image(filename, caption, description=""):
     )
 
     if image_path.exists():
-
         col1, col2 = st.columns([1.2, 1])
 
         with col1:
@@ -146,7 +141,6 @@ def show_image(filename, caption, description=""):
             )
 
         with col2:
-
             clean_description = (
                 description
                 .replace("**Insight:**", "")
@@ -155,26 +149,24 @@ def show_image(filename, caption, description=""):
                 .replace("```", "")
                 .strip()
             )
-
-            # SESUDAH
-st.markdown(
-    f"""
-    <p style="
-        font-size:35px;
-        line-height:2;
-        text-align:justify;
-        color:white;
-        background-color:transparent;
-        padding-top:10px;
-        margin:0;
-        display:block;
-        width:100%;
-    ">
-        {clean_description}
-    </p>
-    """,
-    unsafe_allow_html=True
-)
+            st.markdown(
+                f"""
+                <p style="
+                    font-size:35px;
+                    line-height:2;
+                    text-align:justify;
+                    color:white;
+                    background-color:transparent;
+                    padding-top:10px;
+                    margin:0;
+                    display:block;
+                    width:100%;
+                ">
+                    {clean_description}
+                </p>
+                """,
+                unsafe_allow_html=True
+            )
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.divider()
