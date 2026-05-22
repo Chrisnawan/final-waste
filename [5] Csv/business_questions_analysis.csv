@@ -1,0 +1,18 @@
+No,Pertanyaan Bisnis,Jawaban Berdasarkan Hasil Model
+1,Seberapa baik performa model dalam mengklasifikasikan jenis sampah berdasarkan citra?,"
+Berdasarkan hasil evaluasi final, model EfficientNetB0 memperoleh akurasi testing sebesar 82.30%
+dan MAE sebesar 0.0159. Nilai ini menunjukkan kemampuan model dalam mengklasifikasikan jenis sampah
+berdasarkan citra. Jika akurasi minimal 85% dan MAE maksimal 0.2, maka model memenuhi target proyek.
+"
+2,Kategori sampah apa yang paling sulit diklasifikasikan dan apa penyebabnya?,"
+Kategori sampah yang paling sulit diklasifikasikan adalah aluminum_food_cans dengan precision 0.6842,
+recall 0.3421, dan F1-score 0.4561. Penyebabnya kemungkinan karena kemiripan visual
+dengan kelas lain, pencahayaan gambar yang tidak konsisten, sudut pengambilan gambar, tekstur yang mirip,
+atau jumlah data pada kelas tersebut lebih sedikit.
+"
+3,Bagaimana penerapan model ini dapat meningkatkan efisiensi dan akurasi dalam proses pemilahan sampah?,"
+Penerapan model klasifikasi sampah dapat meningkatkan efisiensi proses pemilahan karena model mampu
+memberikan prediksi kategori sampah secara otomatis. Dengan akurasi testing sebesar 82.30%,
+model berpotensi mengurangi human error, mempercepat identifikasi jenis sampah, dan meningkatkan konsistensi
+hasil klasifikasi dibanding proses manual.
+"

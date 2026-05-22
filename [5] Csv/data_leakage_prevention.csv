@@ -1,0 +1,8 @@
+Aspek Pencegahan Leakage,Status,Keterangan
+Split dataset sebelum training,Aman,Dataset dibagi sebelum masuk model.
+Train/validation/test terpisah,Aman,Setiap subset berada pada folder berbeda.
+Augmentasi hanya pada training,Aman,Hanya train_datagen yang memakai augmentasi.
+Validation dan test tanpa augmentasi,Aman,val_test_datagen tidak memakai augmentasi.
+Test generator shuffle=False,Aman,Urutan test stabil untuk evaluasi.
+Class weight dari train saja,Aman,Menghindari informasi validation/test masuk training.
+Test tidak dipakai untuk training,Aman,Test hanya dipakai setelah model selesai dilatih.

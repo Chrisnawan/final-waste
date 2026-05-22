@@ -1,0 +1,24 @@
+Kategori,Nama Variabel,Tipe Data,Deskripsi
+Input Data,image,Image/File,Gambar sampah sebagai input utama model.
+Input Data,filename,String,Nama file gambar.
+Input Data,path,String,Lokasi file gambar.
+Input Data,label,Categorical,Kategori atau kelas sampah.
+Input Data,class_names,List,Daftar seluruh nama kelas sampah.
+Preprocessing,IMG_HEIGHT,Integer,Tinggi gambar setelah preprocessing.
+Preprocessing,IMG_WIDTH,Integer,Lebar gambar setelah preprocessing.
+Preprocessing,BATCH_SIZE,Integer,Jumlah data dalam satu batch.
+Feature Engineering,augmentation,Image Transformation,Transformasi gambar untuk variasi data training.
+Data Generator,train_generator,Object,Generator data training.
+Data Generator,val_generator,Object,Generator data validation.
+Data Generator,test_generator,Object,Generator data testing.
+Feature Engineering,class_weight,Dictionary,Bobot kelas untuk imbalance dataset.
+Prediction,prediction,Float Array,Array probabilitas hasil prediksi model.
+Prediction,predicted_class,String,Kelas dengan probabilitas tertinggi.
+Prediction,confidence_score,Float,Tingkat keyakinan model terhadap prediksi.
+Evaluation,train_accuracy,Float,Akurasi training.
+Evaluation,val_accuracy,Float,Akurasi validation.
+Evaluation,test_accuracy,Float,Akurasi testing.
+Evaluation,train_loss,Float,Loss training.
+Evaluation,val_loss,Float,Loss validation.
+Evaluation,test_loss,Float,Loss testing.
+Evaluation,MAE,Float,Mean Absolute Error model.
