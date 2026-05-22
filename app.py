@@ -63,11 +63,13 @@ def load_model():
         st.error(f"File model tidak ditemukan: {MODEL_PATH}")
         st.stop()
 
-    return tf.keras.models.load_model(str(MODEL_PATH))
+    return tf.keras.models.load_model(
+        str(MODEL_PATH),
+        compile=False
+    )
 
 
 model = load_model()
-
 # ==========================================
 # LOAD CLASS NAMES
 # ==========================================
