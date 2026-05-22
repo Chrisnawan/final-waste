@@ -48,7 +48,7 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("best_finetune_model.keras")
+MODEL_PATH = Path("fixed_model.h5")
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 IMG_SIZE = 224
