@@ -45,19 +45,19 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
 
 </style>
 """, unsafe_allow_html=True)
-# ==========================================
-# PATH CONFIG
-# ==========================================
-MODEL_PATH = Path("fixed_model.h5")
-CLASS_PATH = Path("class_names.txt")
-ASSET_DIR = Path("gambar")
-IMG_SIZE = 224
-# ==========================================
-# LOAD KERAS MODEL
-# ==========================================
+# SESUDAH
 @st.cache_resource
 def load_model():
     import tensorflow as tf
+    from tensorflow.keras.layers import InputLayer
+
+    # Patch kompatibilitas Keras versi lama vs baru
+    class CompatInputLayer(InputLayer):
+        def __init__(self, *args, **kwargs):
+            kwargs.pop("optional", None)
+            if "batch_shape" in kwargs:
+                kwargs["input_shape"] = kwargs.pop("batch_shape")[1:]
+            super().__init__(*args, **kwargs)
 
     if not MODEL_PATH.exists():
         st.error(f"File model tidak ditemukan: {MODEL_PATH}")
@@ -65,11 +65,9 @@ def load_model():
 
     return tf.keras.models.load_model(
         str(MODEL_PATH),
+        custom_objects={"InputLayer": CompatInputLayer},
         compile=False
     )
-
-
-model = load_model()
 # ==========================================
 # LOAD CLASS NAMES
 # ==========================================
