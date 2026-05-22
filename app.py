@@ -208,12 +208,12 @@ st.markdown(
         ♻️ Smart Waste Classification Dashboard
     </h1>
 
-    <p style="
-        font-size:28px;
-        color:#D1D5DB;
-        margin-top:0px;
-        margin-bottom:30px;
-    ">
+  # SESUDAH
+        <p style="
+            font-size:28px;
+            margin-top:0px;
+            margin-bottom:30px;
+        ">
         Dashboard klasifikasi sampah menggunakan model EfficientNetB0 untuk membantu proses identifikasi dan pemilahan sampah.
     </p>
     """,
