@@ -15,7 +15,7 @@ st.set_page_config(
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("fixed_model.h5")
+MODEL_PATH = Path("waste_model (1).tflite")
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 CSV_DIR = Path("[5] Csv")
@@ -48,25 +48,25 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("fixed_model.h5")
+MODEL_PATH = Path("waste_model (1).tflite")
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 IMG_SIZE = 224
 # ==========================================
-# LOAD KERAS MODEL
+# LOAD TFLITE MODEL
 # ==========================================
 @st.cache_resource
 def load_model():
-    import tensorflow as tf
+    from ai_edge_litert.interpreter import Interpreter
 
     if not MODEL_PATH.exists():
         st.error(f"File model tidak ditemukan: {MODEL_PATH}")
         st.stop()
 
-    return tf.keras.models.load_model(
-        str(MODEL_PATH),
-        compile=False
-    )
+    interpreter = Interpreter(model_path=str(MODEL_PATH))
+    interpreter.allocate_tensors()
+
+    return interpreter
 
 
 model = load_model()
