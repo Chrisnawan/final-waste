@@ -50,102 +50,71 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
 def load_model():
     import tensorflow as tf
     from tensorflow.keras.layers import InputLayer
-    from tensorflow.keras import backend as K
 
     if not MODEL_PATH.exists():
-        st.error(f"File model tidak ditemukan: {MODEL_PATH}")
+        st.error(f"❌ File model tidak ditemukan: {MODEL_PATH}")
         st.stop()
 
-    # ── Patch 1: tangani argumen tak dikenal di semua layer ──────────────────
-    # Keras 2.x vs 3.x berubah signature from_config; patch base_layer agar
-    # argumen asing (optional, batch_shape, dsb) diabaikan, bukan raise TypeError
-    import keras.src.engine.base_layer as _bl
-    _orig_from_config = _bl.Layer.from_config.__func__
-
-    @classmethod
-    def _safe_from_config(cls, config):
-        # Hapus kunci yang menyebabkan TypeError di versi Keras terbaru
-        for key in ["optional", "ragged", "sparse"]:
-            config.pop(key, None)
-        # batch_shape → input_shape
-        if "batch_shape" in config:
-            config["input_shape"] = config.pop("batch_shape")[1:]
-        try:
-            return _orig_from_config(cls, config)
-        except TypeError:
-            # Last resort: buang semua kunci non-standar
-            safe_keys = {"name", "trainable", "dtype"}
-            config = {k: v for k, v in config.items() if k in safe_keys}
-            return cls(**config)
-
-    _bl.Layer.from_config = _safe_from_config
-
-    # ── Patch 2: CompatInputLayer (batch_shape + optional) ───────────────────
+    # ── CompatInputLayer ─────────────────────────────────────────────────────
+    # TypeError terjadi karena config InputLayer di .h5 mengandung key
+    # 'batch_shape' atau 'optional' yang tidak dikenal Keras 2.15.
+    # Solusi: override from_config untuk membersihkan config sebelum diproses.
     class CompatInputLayer(InputLayer):
-        def __init__(self, *args, **kwargs):
-            kwargs.pop("optional", None)
-            kwargs.pop("ragged", None)
-            kwargs.pop("sparse", None)
-            if "batch_shape" in kwargs:
-                bs = kwargs.pop("batch_shape")
-                kwargs.setdefault("input_shape", tuple(bs[1:]))
-            super().__init__(*args, **kwargs)
-
         @classmethod
         def from_config(cls, config):
-            for key in ["optional", "ragged", "sparse"]:
-                config.pop(key, None)
+            config.pop("optional",    None)
+            config.pop("ragged",      None)
+            config.pop("sparse",      None)
+            # 'batch_shape' → 'batch_input_shape' (nama resmi Keras 2.x)
             if "batch_shape" in config:
-                config["input_shape"] = config.pop("batch_shape")[1:]
-            return cls(**config)
+                config["batch_input_shape"] = config.pop("batch_shape")
+            return super().from_config(config)
 
-    # ── Coba load bertahap ────────────────────────────────────────────────────
-    model = None
     errors = []
 
-    # Strategi 1: custom_objects + safe_mode=False
+    # Strategi 1 — custom_objects (fix InputLayer config)
     try:
         model = tf.keras.models.load_model(
             str(MODEL_PATH),
             custom_objects={"InputLayer": CompatInputLayer},
             compile=False,
-            safe_mode=False,
         )
         return model
     except Exception as e:
-        errors.append(f"Strategi 1 gagal: {e}")
+        errors.append(f"[1] {type(e).__name__}: {e}")
 
-    # Strategi 2: tanpa custom_objects
+    # Strategi 2 — tanpa custom_objects
     try:
         model = tf.keras.models.load_model(
             str(MODEL_PATH),
             compile=False,
-            safe_mode=False,
         )
         return model
     except Exception as e:
-        errors.append(f"Strategi 2 gagal: {e}")
+        errors.append(f"[2] {type(e).__name__}: {e}")
 
-    # Strategi 3: load weights saja ke arsitektur EfficientNetB0 baru
+    # Strategi 3 — rebuild arsitektur + load weights
     try:
-        base = tf.keras.applications.EfficientNetB0(
-            include_top=False,
-            weights=None,
-            input_shape=(IMG_SIZE, IMG_SIZE, 3),
-        )
-        # Baca jumlah kelas dari class_names.txt
         with open(CLASS_PATH, "r") as f:
             n_classes = len([l for l in f if l.strip()])
-        x = tf.keras.layers.GlobalAveragePooling2D()(base.output)
-        x = tf.keras.layers.Dense(n_classes, activation="softmax")(x)
-        model = tf.keras.Model(inputs=base.input, outputs=x)
+        inputs  = tf.keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
+        base    = tf.keras.applications.EfficientNetB0(
+            include_top=False, weights=None, input_tensor=inputs
+        )
+        x       = tf.keras.layers.GlobalAveragePooling2D()(base.output)
+        x       = tf.keras.layers.Dropout(0.2)(x)
+        outputs = tf.keras.layers.Dense(n_classes, activation="softmax")(x)
+        model   = tf.keras.Model(inputs, outputs)
         model.load_weights(str(MODEL_PATH), by_name=False, skip_mismatch=True)
         return model
     except Exception as e:
-        errors.append(f"Strategi 3 gagal: {e}")
+        errors.append(f"[3] {type(e).__name__}: {e}")
 
-    # Semua strategi gagal
-    st.error("❌ Gagal memuat model. Detail error:\n\n" + "\n".join(errors))
+    # Semua gagal — tampilkan detail agar mudah debug
+    st.error(
+        "❌ Gagal memuat model setelah 3 strategi.\n\n"
+        + "\n\n".join(errors)
+    )
     st.stop()
 # ==========================================
 # LOAD CLASS NAMES
