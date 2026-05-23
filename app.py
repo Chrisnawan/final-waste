@@ -15,7 +15,7 @@ st.set_page_config(
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("fixed_model.h5")
+MODEL_PATH = Path("fixed_model_patched.h5")  # versi Keras 2.x compatible
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 CSV_DIR = Path("[5] Csv")
@@ -49,144 +49,14 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
 @st.cache_resource
 def load_model():
     import tensorflow as tf
-    from tensorflow.keras.layers import InputLayer
 
     if not MODEL_PATH.exists():
         st.error(f"❌ File model tidak ditemukan: {MODEL_PATH}")
         st.stop()
 
-    # ── Root cause: model di-SAVE dengan Keras 3.x (terdeteksi dari DTypePolicy
-    #    di setiap layer config), tapi requirements memakai Keras 2.15.
-    #
-    #    Keras 3.x menyimpan 'dtype' sebagai dict {"class_name":"DTypePolicy",...}
-    #    Keras 2.15 tidak kenal format itu → TypeError saat from_config.
-    #
-    #    Solusi: patch from_config di SEMUA layer bermasalah agar:
-    #      1. 'dtype' dict → string "float32"
-    #      2. Key asing (optional, ragged, sparse) dibuang
-    #      3. 'batch_shape' → 'batch_input_shape'
-    #      4. Initializer/regularizer dengan format Keras 3.x dinormalisasi
-
-    def _clean_config(config: dict) -> dict:
-        """Bersihkan config Keras 3.x agar kompatibel dengan Keras 2.15."""
-        # dtype: {"class_name": "DTypePolicy", "config": {"name": "float32"}} → "float32"
-        if isinstance(config.get("dtype"), dict):
-            try:
-                config["dtype"] = config["dtype"]["config"]["name"]
-            except (KeyError, TypeError):
-                config["dtype"] = "float32"
-
-        # Key asing InputLayer
-        for key in ("optional", "ragged", "sparse"):
-            config.pop(key, None)
-
-        # batch_shape → batch_input_shape (InputLayer)
-        if "batch_shape" in config:
-            config["batch_input_shape"] = config.pop("batch_shape")
-
-        # Normalkan initializer/regularizer yang pakai format Keras 3.x
-        # {"module": "keras.initializers", "class_name": "GlorotUniform",
-        #  "config": {...}, "registered_name": null}
-        # → {"class_name": "GlorotUniform", "config": {...}}
-        for field in ("kernel_initializer", "bias_initializer",
-                      "kernel_regularizer", "bias_regularizer",
-                      "activity_regularizer", "depthwise_initializer",
-                      "pointwise_initializer", "beta_initializer",
-                      "gamma_initializer", "moving_mean_initializer",
-                      "moving_variance_initializer"):
-            val = config.get(field)
-            if isinstance(val, dict) and "module" in val:
-                val.pop("module", None)
-                val.pop("registered_name", None)
-                config[field] = val
-
-        return config
-
-    # Subclass universal yang inject _clean_config ke from_config
-    class _PatchedMixin:
-        @classmethod
-        def from_config(cls, config):
-            config = _clean_config(dict(config))
-            return super().from_config(config)
-
-    class CompatInputLayer(_PatchedMixin, InputLayer):
-        pass
-
-    class CompatRescaling(_PatchedMixin, tf.keras.layers.Rescaling):
-        @classmethod
-        def from_config(cls, config):
-            config = _clean_config(dict(config))
-            config.setdefault("scale",  1.0 / 255.0)
-            config.setdefault("offset", 0.0)
-            return cls(**config)
-
-    class CompatNormalization(_PatchedMixin, tf.keras.layers.Normalization):
-        pass
-
-    class CompatBatchNorm(_PatchedMixin, tf.keras.layers.BatchNormalization):
-        pass
-
-    class CompatDense(_PatchedMixin, tf.keras.layers.Dense):
-        pass
-
-    class CompatDropout(_PatchedMixin, tf.keras.layers.Dropout):
-        pass
-
-    class CompatConv2D(_PatchedMixin, tf.keras.layers.Conv2D):
-        pass
-
-    class CompatDepthwiseConv2D(_PatchedMixin, tf.keras.layers.DepthwiseConv2D):
-        pass
-
-    class CompatActivation(_PatchedMixin, tf.keras.layers.Activation):
-        pass
-
-    class CompatGAP(_PatchedMixin, tf.keras.layers.GlobalAveragePooling2D):
-        pass
-
-    class CompatReshape(_PatchedMixin, tf.keras.layers.Reshape):
-        pass
-
-    class CompatMultiply(_PatchedMixin, tf.keras.layers.Multiply):
-        pass
-
-    class CompatAdd(_PatchedMixin, tf.keras.layers.Add):
-        pass
-
-    class CompatZeroPadding2D(_PatchedMixin, tf.keras.layers.ZeroPadding2D):
-        pass
-
-    custom_objects = {
-        "InputLayer":              CompatInputLayer,
-        "Rescaling":               CompatRescaling,
-        "Normalization":           CompatNormalization,
-        "BatchNormalization":      CompatBatchNorm,
-        "Dense":                   CompatDense,
-        "Dropout":                 CompatDropout,
-        "Conv2D":                  CompatConv2D,
-        "DepthwiseConv2D":         CompatDepthwiseConv2D,
-        "Activation":              CompatActivation,
-        "GlobalAveragePooling2D":  CompatGAP,
-        "Reshape":                 CompatReshape,
-        "Multiply":                CompatMultiply,
-        "Add":                     CompatAdd,
-        "ZeroPadding2D":           CompatZeroPadding2D,
-    }
-
-    errors = []
-
-    # Strategi 1 — custom_objects lengkap (fix semua layer Keras 3.x → 2.15)
-    try:
-        model = tf.keras.models.load_model(
-            str(MODEL_PATH),
-            custom_objects=custom_objects,
-            compile=False,
-        )
-        return model
-    except Exception as e:
-        errors.append(f"[1] {type(e).__name__}: {e}")
-
-    # Strategi 2 — tanpa custom_objects
+    # Model asli di-save dengan Keras 3.x — file .h5 sudah di-patch
+    # (model_config JSON dikonversi ke format Keras 2.x) sehingga bisa
+    # di-load langsung tanpa custom_objects.
     try:
         model = tf.keras.models.load_model(
             str(MODEL_PATH),
@@ -194,14 +64,10 @@ def load_model():
         )
         return model
     except Exception as e:
-        errors.append(f"[2] {type(e).__name__}: {e}")
+        st.error(f"❌ Gagal memuat model: {type(e).__name__}: {e}")
+        st.stop()
 
-    # Semua gagal — tampilkan detail lengkap
-    st.error(
-        "❌ Gagal memuat model.\n\n"
-        + "\n\n".join(errors)
-    )
-    st.stop()
+
 # ==========================================
 # LOAD CLASS NAMES
 # ==========================================
