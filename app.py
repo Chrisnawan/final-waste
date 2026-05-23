@@ -55,28 +55,131 @@ def load_model():
         st.error(f"❌ File model tidak ditemukan: {MODEL_PATH}")
         st.stop()
 
-    # ── CompatInputLayer ─────────────────────────────────────────────────────
-    # TypeError terjadi karena config InputLayer di .h5 mengandung key
-    # 'batch_shape' atau 'optional' yang tidak dikenal Keras 2.15.
-    # Solusi: override from_config untuk membersihkan config sebelum diproses.
-    class CompatInputLayer(InputLayer):
+    # ── Root cause: model di-SAVE dengan Keras 3.x (terdeteksi dari DTypePolicy
+    #    di setiap layer config), tapi requirements memakai Keras 2.15.
+    #
+    #    Keras 3.x menyimpan 'dtype' sebagai dict {"class_name":"DTypePolicy",...}
+    #    Keras 2.15 tidak kenal format itu → TypeError saat from_config.
+    #
+    #    Solusi: patch from_config di SEMUA layer bermasalah agar:
+    #      1. 'dtype' dict → string "float32"
+    #      2. Key asing (optional, ragged, sparse) dibuang
+    #      3. 'batch_shape' → 'batch_input_shape'
+    #      4. Initializer/regularizer dengan format Keras 3.x dinormalisasi
+
+    def _clean_config(config: dict) -> dict:
+        """Bersihkan config Keras 3.x agar kompatibel dengan Keras 2.15."""
+        # dtype: {"class_name": "DTypePolicy", "config": {"name": "float32"}} → "float32"
+        if isinstance(config.get("dtype"), dict):
+            try:
+                config["dtype"] = config["dtype"]["config"]["name"]
+            except (KeyError, TypeError):
+                config["dtype"] = "float32"
+
+        # Key asing InputLayer
+        for key in ("optional", "ragged", "sparse"):
+            config.pop(key, None)
+
+        # batch_shape → batch_input_shape (InputLayer)
+        if "batch_shape" in config:
+            config["batch_input_shape"] = config.pop("batch_shape")
+
+        # Normalkan initializer/regularizer yang pakai format Keras 3.x
+        # {"module": "keras.initializers", "class_name": "GlorotUniform",
+        #  "config": {...}, "registered_name": null}
+        # → {"class_name": "GlorotUniform", "config": {...}}
+        for field in ("kernel_initializer", "bias_initializer",
+                      "kernel_regularizer", "bias_regularizer",
+                      "activity_regularizer", "depthwise_initializer",
+                      "pointwise_initializer", "beta_initializer",
+                      "gamma_initializer", "moving_mean_initializer",
+                      "moving_variance_initializer"):
+            val = config.get(field)
+            if isinstance(val, dict) and "module" in val:
+                val.pop("module", None)
+                val.pop("registered_name", None)
+                config[field] = val
+
+        return config
+
+    # Subclass universal yang inject _clean_config ke from_config
+    class _PatchedMixin:
         @classmethod
         def from_config(cls, config):
-            config.pop("optional",    None)
-            config.pop("ragged",      None)
-            config.pop("sparse",      None)
-            # 'batch_shape' → 'batch_input_shape' (nama resmi Keras 2.x)
-            if "batch_shape" in config:
-                config["batch_input_shape"] = config.pop("batch_shape")
+            config = _clean_config(dict(config))
             return super().from_config(config)
+
+    class CompatInputLayer(_PatchedMixin, InputLayer):
+        pass
+
+    class CompatRescaling(_PatchedMixin, tf.keras.layers.Rescaling):
+        @classmethod
+        def from_config(cls, config):
+            config = _clean_config(dict(config))
+            config.setdefault("scale",  1.0 / 255.0)
+            config.setdefault("offset", 0.0)
+            return cls(**config)
+
+    class CompatNormalization(_PatchedMixin, tf.keras.layers.Normalization):
+        pass
+
+    class CompatBatchNorm(_PatchedMixin, tf.keras.layers.BatchNormalization):
+        pass
+
+    class CompatDense(_PatchedMixin, tf.keras.layers.Dense):
+        pass
+
+    class CompatDropout(_PatchedMixin, tf.keras.layers.Dropout):
+        pass
+
+    class CompatConv2D(_PatchedMixin, tf.keras.layers.Conv2D):
+        pass
+
+    class CompatDepthwiseConv2D(_PatchedMixin, tf.keras.layers.DepthwiseConv2D):
+        pass
+
+    class CompatActivation(_PatchedMixin, tf.keras.layers.Activation):
+        pass
+
+    class CompatGAP(_PatchedMixin, tf.keras.layers.GlobalAveragePooling2D):
+        pass
+
+    class CompatReshape(_PatchedMixin, tf.keras.layers.Reshape):
+        pass
+
+    class CompatMultiply(_PatchedMixin, tf.keras.layers.Multiply):
+        pass
+
+    class CompatAdd(_PatchedMixin, tf.keras.layers.Add):
+        pass
+
+    class CompatZeroPadding2D(_PatchedMixin, tf.keras.layers.ZeroPadding2D):
+        pass
+
+    custom_objects = {
+        "InputLayer":              CompatInputLayer,
+        "Rescaling":               CompatRescaling,
+        "Normalization":           CompatNormalization,
+        "BatchNormalization":      CompatBatchNorm,
+        "Dense":                   CompatDense,
+        "Dropout":                 CompatDropout,
+        "Conv2D":                  CompatConv2D,
+        "DepthwiseConv2D":         CompatDepthwiseConv2D,
+        "Activation":              CompatActivation,
+        "GlobalAveragePooling2D":  CompatGAP,
+        "Reshape":                 CompatReshape,
+        "Multiply":                CompatMultiply,
+        "Add":                     CompatAdd,
+        "ZeroPadding2D":           CompatZeroPadding2D,
+    }
 
     errors = []
 
-    # Strategi 1 — custom_objects (fix InputLayer config)
+    # Strategi 1 — custom_objects lengkap (fix semua layer Keras 3.x → 2.15)
     try:
         model = tf.keras.models.load_model(
             str(MODEL_PATH),
-            custom_objects={"InputLayer": CompatInputLayer},
+            custom_objects=custom_objects,
             compile=False,
         )
         return model
@@ -93,26 +196,9 @@ def load_model():
     except Exception as e:
         errors.append(f"[2] {type(e).__name__}: {e}")
 
-    # Strategi 3 — rebuild arsitektur + load weights
-    try:
-        with open(CLASS_PATH, "r") as f:
-            n_classes = len([l for l in f if l.strip()])
-        inputs  = tf.keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
-        base    = tf.keras.applications.EfficientNetB0(
-            include_top=False, weights=None, input_tensor=inputs
-        )
-        x       = tf.keras.layers.GlobalAveragePooling2D()(base.output)
-        x       = tf.keras.layers.Dropout(0.2)(x)
-        outputs = tf.keras.layers.Dense(n_classes, activation="softmax")(x)
-        model   = tf.keras.Model(inputs, outputs)
-        model.load_weights(str(MODEL_PATH), by_name=False, skip_mismatch=True)
-        return model
-    except Exception as e:
-        errors.append(f"[3] {type(e).__name__}: {e}")
-
-    # Semua gagal — tampilkan detail agar mudah debug
+    # Semua gagal — tampilkan detail lengkap
     st.error(
-        "❌ Gagal memuat model setelah 3 strategi.\n\n"
+        "❌ Gagal memuat model.\n\n"
         + "\n\n".join(errors)
     )
     st.stop()
@@ -239,10 +325,12 @@ def predict_image(image):
 
     img_array = np.array(image).astype(np.float32)
 
-    # Normalisasi sesuai saat training (rescale 1./255)
-    img_array = img_array / 255.0
+    # ⚠️ JANGAN normalisasi di sini — model sudah punya layer Rescaling(1/255)
+    # di dalamnya (terdeteksi dari inspeksi file .h5).
+    # Normalisasi ganda akan merusak prediksi (nilai pixel jadi ~0.000015).
+    # img_array = img_array / 255.0  ← DIHAPUS
 
-    img_array = np.expand_dims(img_array, axis=0)
+    img_array = np.expand_dims(img_array, axis=0)  # shape: (1, 224, 224, 3)
 
     prediction = model.predict(img_array, verbose=0)
 
