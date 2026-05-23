@@ -183,24 +183,42 @@ def show_image(filename, caption, description=""):
 # PREDICTION FUNCTION
 # ==========================================
 def predict_image(image):
+    interpreter = model
+
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+    input_shape = input_details[0]["shape"]
+    input_height = int(input_shape[1])
+    input_width = int(input_shape[2])
+    input_dtype = input_details[0]["dtype"]
+
     image = image.convert("RGB")
-    image = image.resize((IMG_SIZE, IMG_SIZE))
+    image = image.resize((input_width, input_height))
 
-    img_array = np.array(image).astype(np.float32)
+    img_array = np.array(image)
 
-    # Gunakan normalisasi ini jika model dilatih dengan rescale 1./255
-    img_array = img_array / 255.0
+    if input_dtype == np.float32:
+        img_array = img_array.astype(np.float32) / 255.0
+    else:
+        img_array = img_array.astype(input_dtype)
 
     img_array = np.expand_dims(img_array, axis=0)
 
-    prediction = model.predict(img_array, verbose=0)
+    interpreter.set_tensor(input_details[0]["index"], img_array)
+    interpreter.invoke()
 
-    predicted_index = int(np.argmax(prediction))
+    prediction = interpreter.get_tensor(output_details[0]["index"])
+
+    if output_details[0]["dtype"] != np.float32:
+        scale, zero_point = output_details[0]["quantization"]
+        prediction = scale * (prediction.astype(np.float32) - zero_point)
+
+    predicted_index = int(np.argmax(prediction[0]))
     predicted_class = class_names[predicted_index]
-    confidence = float(np.max(prediction) * 100)
+    confidence = float(np.max(prediction[0]) * 100)
 
     return predicted_class, confidence
-
 # ==========================================
 # TITLE
 # ==========================================
