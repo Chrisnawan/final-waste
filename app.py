@@ -79,6 +79,11 @@ with open(CLASS_PATH, "r", encoding="utf-8") as f:
     class_names = [line.strip() for line in f.readlines() if line.strip()]
 
 # ==========================================
+# LOAD MODEL
+# ==========================================
+model = load_model()
+
+# ==========================================
 # TRASH CATEGORY MAP
 # ==========================================
 trash_map = {
@@ -177,12 +182,16 @@ def show_image(filename, caption, description=""):
 # PREDICTION FUNCTION
 # ==========================================
 def predict_image(image):
+    if model is None:
+        st.error("Model belum berhasil dimuat. Periksa file fixed_model.h5.")
+        st.stop()
+
     image = image.convert("RGB")
     image = image.resize((IMG_SIZE, IMG_SIZE))
 
     img_array = np.array(image).astype(np.float32)
 
-    # Gunakan normalisasi ini jika model dilatih dengan rescale 1./255
+    # Normalisasi sesuai saat training (rescale 1./255)
     img_array = img_array / 255.0
 
     img_array = np.expand_dims(img_array, axis=0)
