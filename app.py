@@ -57,7 +57,7 @@ IMG_SIZE = 224
 # ==========================================
 @st.cache_resource
 def load_model():
-    from ai_edge_litert.interpreter import Interpreter
+    from tflite_runtime.interpreter import Interpreter
 
     if not MODEL_PATH.exists():
         st.error(f"File model tidak ditemukan: {MODEL_PATH}")
