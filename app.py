@@ -15,7 +15,7 @@ st.set_page_config(
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("fixed_model_patched.h5")  # versi Keras 2.x compatible
+MODEL_PATH = Path("fixed_model.h5")
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 CSV_DIR = Path("[5] Csv")
@@ -49,25 +49,25 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
 @st.cache_resource
 def load_model():
     import tensorflow as tf
+    from tensorflow.keras.layers import InputLayer
+
+    # Patch kompatibilitas Keras versi lama vs baru
+    class CompatInputLayer(InputLayer):
+        def __init__(self, *args, **kwargs):
+            kwargs.pop("optional", None)
+            if "batch_shape" in kwargs:
+                kwargs["input_shape"] = kwargs.pop("batch_shape")[1:]
+            super().__init__(*args, **kwargs)
 
     if not MODEL_PATH.exists():
-        st.error(f"❌ File model tidak ditemukan: {MODEL_PATH}")
+        st.error(f"File model tidak ditemukan: {MODEL_PATH}")
         st.stop()
 
-    # Model asli di-save dengan Keras 3.x — file .h5 sudah di-patch
-    # (model_config JSON dikonversi ke format Keras 2.x) sehingga bisa
-    # di-load langsung tanpa custom_objects.
-    try:
-        model = tf.keras.models.load_model(
-            str(MODEL_PATH),
-            compile=False,
-        )
-        return model
-    except Exception as e:
-        st.error(f"❌ Gagal memuat model: {type(e).__name__}: {e}")
-        st.stop()
-
-
+    return tf.keras.models.load_model(
+        str(MODEL_PATH),
+        custom_objects={"InputLayer": CompatInputLayer},
+        compile=False
+    )
 # ==========================================
 # LOAD CLASS NAMES
 # ==========================================
@@ -77,11 +77,6 @@ if not CLASS_PATH.exists():
 
 with open(CLASS_PATH, "r", encoding="utf-8") as f:
     class_names = [line.strip() for line in f.readlines() if line.strip()]
-
-# ==========================================
-# LOAD MODEL
-# ==========================================
-model = load_model()
 
 # ==========================================
 # TRASH CATEGORY MAP
@@ -182,21 +177,15 @@ def show_image(filename, caption, description=""):
 # PREDICTION FUNCTION
 # ==========================================
 def predict_image(image):
-    if model is None:
-        st.error("Model belum berhasil dimuat. Periksa file fixed_model.h5.")
-        st.stop()
-
     image = image.convert("RGB")
     image = image.resize((IMG_SIZE, IMG_SIZE))
 
     img_array = np.array(image).astype(np.float32)
 
-    # ⚠️ JANGAN normalisasi di sini — model sudah punya layer Rescaling(1/255)
-    # di dalamnya (terdeteksi dari inspeksi file .h5).
-    # Normalisasi ganda akan merusak prediksi (nilai pixel jadi ~0.000015).
-    # img_array = img_array / 255.0  ← DIHAPUS
+    # Gunakan normalisasi ini jika model dilatih dengan rescale 1./255
+    img_array = img_array / 255.0
 
-    img_array = np.expand_dims(img_array, axis=0)  # shape: (1, 224, 224, 3)
+    img_array = np.expand_dims(img_array, axis=0)
 
     prediction = model.predict(img_array, verbose=0)
 
