@@ -1,9 +1,7 @@
 streamlit==1.45.1
-tensorflow==2.15.0
-keras==2.15.0
+ai-edge-litert==2.1.5
 numpy==1.26.4
 pandas==2.2.3
-altair==5.5.0
 Pillow==10.4.0
 matplotlib==3.8.4
 seaborn==0.13.2
