@@ -193,17 +193,13 @@ def predict_image(image):
     input_width = int(input_shape[2])
     input_dtype = input_details[0]["dtype"]
 
-    st.write("Input dtype:", str(input_dtype))
-    st.write("Input shape:", input_shape.tolist())
-    st.write("Output dtype:", str(output_details[0]["dtype"]))
-
     image = image.convert("RGB")
     image = image.resize((input_width, input_height))
 
     img_array = np.array(image)
 
     if input_dtype == np.float32:
-        img_array = img_array.astype(np.float32)
+        img_array = img_array.astype(np.float32) / 255.0
     else:
         img_array = img_array.astype(input_dtype)
 
