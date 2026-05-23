@@ -21,8 +21,10 @@ plastic_food_containers
 plastic_shopping_bags
 plastic_soda_bottles
 plastic_straws
+plastic_trash_bags
+plastic_water_bottles
 shoes
 steel_food_cans
 styrofoam_cups
 styrofoam_food_containers
-tea_bagsi
+tea_bags
