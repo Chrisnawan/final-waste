@@ -193,6 +193,10 @@ def predict_image(image):
     input_width = int(input_shape[2])
     input_dtype = input_details[0]["dtype"]
 
+    st.write("Input dtype:", input_dtype)
+    st.write("Input shape:", input_shape)
+    st.write("Output dtype:", output_details[0]["dtype"])
+
     image = image.convert("RGB")
     image = image.resize((input_width, input_height))
 
