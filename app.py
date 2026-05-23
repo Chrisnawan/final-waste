@@ -45,19 +45,19 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
 
 </style>
 """, unsafe_allow_html=True)
-# SESUDAH
+# ==========================================
+# PATH CONFIG
+# ==========================================
+MODEL_PATH = Path("fixed_model.h5")
+CLASS_PATH = Path("class_names.txt")
+ASSET_DIR = Path("gambar")
+IMG_SIZE = 224
+# ==========================================
+# LOAD KERAS MODEL
+# ==========================================
 @st.cache_resource
 def load_model():
     import tensorflow as tf
-    from tensorflow.keras.layers import InputLayer
-
-    # Patch kompatibilitas Keras versi lama vs baru
-    class CompatInputLayer(InputLayer):
-        def __init__(self, *args, **kwargs):
-            kwargs.pop("optional", None)
-            if "batch_shape" in kwargs:
-                kwargs["input_shape"] = kwargs.pop("batch_shape")[1:]
-            super().__init__(*args, **kwargs)
 
     if not MODEL_PATH.exists():
         st.error(f"File model tidak ditemukan: {MODEL_PATH}")
@@ -65,9 +65,11 @@ def load_model():
 
     return tf.keras.models.load_model(
         str(MODEL_PATH),
-        custom_objects={"InputLayer": CompatInputLayer},
         compile=False
     )
+
+
+model = load_model()
 # ==========================================
 # LOAD CLASS NAMES
 # ==========================================
@@ -119,7 +121,11 @@ trash_map = {
     "paper_cups": "Kertas / Campuran"
 }
 
+# ==========================================
+# HELPER: SHOW IMAGE WITH SIDE INSIGHT
+# ==========================================
 def show_image(filename, caption, description=""):
+
     image_path = ASSET_DIR / filename
 
     st.markdown(
@@ -132,6 +138,7 @@ def show_image(filename, caption, description=""):
     )
 
     if image_path.exists():
+
         col1, col2 = st.columns([1.2, 1])
 
         with col1:
@@ -141,6 +148,7 @@ def show_image(filename, caption, description=""):
             )
 
         with col2:
+
             clean_description = (
                 description
                 .replace("**Insight:**", "")
@@ -149,20 +157,18 @@ def show_image(filename, caption, description=""):
                 .replace("```", "")
                 .strip()
             )
+
             st.markdown(
                 f"""
                 <p style="
-                    font-size:18px;
-                    line-height:1.8;
+                    font-size:35px;
+                    line-height:2;
                     text-align:justify;
-                    color:var(--text-color);
-                    background-color:transparent;
+                    color:white;
                     padding-top:10px;
                     margin:0;
-                    display:block;
-                    width:100%;
                 ">
-                    {clean_description}
+                    <b></b> {clean_description}
                 </p>
                 """,
                 unsafe_allow_html=True
@@ -210,6 +216,7 @@ st.markdown(
 
     <p style="
         font-size:28px;
+        color:#D1D5DB;
         margin-top:0px;
         margin-bottom:30px;
     ">
@@ -218,6 +225,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 # ==========================================
 # TABS
 # ==========================================
