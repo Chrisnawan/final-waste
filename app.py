@@ -79,48 +79,55 @@ if not CLASS_PATH.exists():
 
 with open(CLASS_PATH, "r", encoding="utf-8") as f:
     class_names = [line.strip() for line in f.readlines() if line.strip()]
-
 # ==========================================
 # TRASH CATEGORY MAP
 # ==========================================
 trash_map = {
+
+    # ORGANIK
     "eggshells": "Organik",
     "food_waste": "Organik",
     "coffee_grounds": "Organik",
     "tea_bags": "Organik",
 
+    # LOGAM
     "aerosol_cans": "Anorganik / Logam",
     "aluminum_food_cans": "Anorganik / Logam",
     "aluminum_soda_cans": "Anorganik / Logam",
     "steel_food_cans": "Anorganik / Logam",
 
+    # KERTAS
     "cardboard_boxes": "Kertas / Kardus",
     "cardboard_packaging": "Kertas / Kardus",
     "magazines": "Kertas",
     "newspaper": "Kertas",
     "office_paper": "Kertas",
+    "paper_cups": "Kertas / Campuran",
 
-    "plastic_soda_bottles": "Plastik",
-    "plastic_food_containers": "Plastik",
-    "plastic_detergent_bottles": "Plastik",
-    "plastic_shopping_bags": "Plastik",
-    "plastic_straws": "Plastik",
+    # PLASTIK
     "plastic_cup_lids": "Plastik",
+    "plastic_detergent_bottles": "Plastik",
+    "plastic_food_containers": "Plastik",
+    "plastic_shopping_bags": "Plastik",
+    "plastic_soda_bottles": "Plastik",
+    "plastic_straws": "Plastik",
+    "plastic_trash_bags": "Plastik",
+    "plastic_water_bottles": "Plastik",
     "disposable_plastic_cutlery": "Plastik",
 
+    # KACA
     "glass_beverage_bottles": "Kaca",
     "glass_cosmetic_containers": "Kaca",
     "glass_food_jars": "Kaca",
 
+    # TEKSTIL
     "clothing": "Tekstil",
     "shoes": "Tekstil / Karet",
 
+    # STYROFOAM
     "styrofoam_cups": "Styrofoam",
-    "styrofoam_food_containers": "Styrofoam",
-
-    "paper_cups": "Kertas / Campuran"
+    "styrofoam_food_containers": "Styrofoam"
 }
-
 # ==========================================
 # HELPER: SHOW IMAGE WITH SIDE INSIGHT
 # ==========================================
