@@ -15,7 +15,7 @@ st.set_page_config(
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("waste_model (1).tflite")
+MODEL_PATH = Path("best_model_custom.keras")
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 CSV_DIR = Path("[5] Csv")
@@ -59,7 +59,7 @@ div[data-testid="stMarkdownContainer"] {
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("waste_model (1).tflite")
+MODEL_PATH = Path("best_model_custom.keras")
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 IMG_SIZE = 224
