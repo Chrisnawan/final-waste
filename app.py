@@ -21,26 +21,37 @@ ASSET_DIR = Path("gambar")
 CSV_DIR = Path("[5] Csv")
 IMG_SIZE = 224
 # ==========================================
-# CUSTOM CSS
+# CUSTOM CSS STREAMLIT
 # ==========================================
 
 st.markdown("""
 <style>
 
-/* Perbesar teks tab Streamlit */
+/* TAB STREAMLIT */
 div[data-testid="stTabs"] button p {
-    font-size: 28px !important;
-    font-weight: 70 !important;
+    font-size: 16px !important;   /* ukuran tulisan tab */
+    font-weight: 600 !important;
 }
 
-/* Perbesar area klik tab */
+/* ukuran area tab */
 div[data-testid="stTabs"] button {
-    padding: 18px 28px !important;
+    padding: 8px 16px !important;
 }
 
-/* Garis bawah tab aktif */
+/* tab aktif */
 div[data-testid="stTabs"] button[aria-selected="true"] {
-    border-bottom: 4px solid #00FFAA !important;
+    border-bottom: 3px solid #00FFAA !important;
+}
+
+/* tulisan biasa di streamlit */
+p {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+}
+
+/* markdown text */
+div[data-testid="stMarkdownContainer"] {
+    font-size: 15px !important;
 }
 
 </style>
