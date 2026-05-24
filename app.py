@@ -30,7 +30,7 @@ st.markdown("""
 /* Perbesar teks tab Streamlit */
 div[data-testid="stTabs"] button p {
     font-size: 28px !important;
-    font-weight: 700 !important;
+    font-weight: 70 !important;
 }
 
 /* Perbesar area klik tab */
