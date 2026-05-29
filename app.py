@@ -437,7 +437,7 @@ with tab1:
             "tes mae.png",
             "Perbandingan Test MAE",
             """
-            Pada data pengujian, EfficientNetB0 menunjukkan performa terbaik dengan nilai MAE sebesar 0.0086,
+            Pada data pengujian, EfficientNetB0 menunjukkan performa terbaik dengan nilai MAE sebesar 0.0083,
             lebih rendah dibandingkan ResNet50 sebesar 0.0113. Nilai MAE yang rendah menunjukkan bahwa rata-rata
             kesalahan prediksi model relatif kecil.
 
