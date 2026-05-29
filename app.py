@@ -312,6 +312,7 @@ with tab1:
             "perbandingan validasi akurasi .png",
             "Perbandingan Validasi Akurasi",
             "Pada tahap validasi, model EfficientNetB0 memperoleh akurasi sebesar 93.11%, lebih tinggi dibandingkan ResNet50 yang mencapai 91.78% ."
+        ),
         (
             "perbandingan training akurasi .png",
             "Perbandingan Training Akurasi",
