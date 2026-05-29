@@ -281,100 +281,264 @@ with tab1:
         (
             "confirus matrix.png",
             "Confusion Matrix EfficientNetB0",
-            "Confusion matrix digunakan untuk mengevaluasi performa model klasifikasi dalam membedakan setiap kategori sampah berdasarkan citra yang diberikan. Matriks ini memperlihatkan hubungan antara label asli dan hasil prediksi model sehingga dapat memberikan gambaran mengenai tingkat keberhasilan maupun kesalahan klasifikasi pada masing-masing kategori."
+            """
+            Confusion matrix digunakan untuk melihat kemampuan model dalam membedakan setiap kelas sampah
+            berdasarkan label asli dan hasil prediksi. Bagian diagonal pada matriks menunjukkan jumlah prediksi
+            yang benar, sedangkan bagian di luar diagonal menunjukkan kesalahan klasifikasi. Semakin besar nilai
+            pada diagonal, maka semakin baik kemampuan model dalam mengenali kelas tersebut.
+
+            Insight dari visualisasi ini adalah model EfficientNetB0 sudah mampu mengklasifikasikan sebagian besar
+            kelas dengan baik. Namun, beberapa kelas masih berpotensi tertukar karena memiliki kemiripan visual,
+            seperti bentuk kemasan, warna objek, tekstur permukaan, atau sudut pengambilan gambar yang hampir sama.
+            Informasi ini penting untuk mengetahui kelas mana yang perlu ditingkatkan melalui penambahan data atau
+            perbaikan kualitas dataset.
+            """
         ),
         (
             "confidence.png",
             "Confidence Model",
-            "Grafik distribusi confidence digunakan untuk menganalisis tingkat keyakinan model dalam melakukan prediksi terhadap setiap kategori sampah. Prediksi dengan confidence tinggi menunjukkan bahwa model memiliki tingkat keyakinan yang besar terhadap kelas yang dipilih."
+            """
+            Grafik confidence menunjukkan tingkat keyakinan model saat memberikan hasil prediksi. Confidence yang
+            tinggi menunjukkan bahwa model memiliki keyakinan besar terhadap kelas yang dipilih, sedangkan confidence
+            rendah menunjukkan bahwa model masih ragu dalam membedakan objek tersebut.
+
+            Insight dari grafik ini adalah semakin banyak prediksi dengan confidence tinggi, maka semakin stabil
+            performa model dalam mengenali objek sampah. Namun, prediksi dengan confidence rendah tetap perlu
+            diperhatikan karena dapat menjadi indikasi adanya gambar yang buram, pencahayaan kurang baik, objek
+            tidak terlihat jelas, atau kemiripan antar kelas sampah.
+            """
         ),
         (
             "overal model.png",
             "Overall Model Performance",
-            "Visualisasi performa keseluruhan model digunakan untuk merangkum hasil evaluasi model berdasarkan accuracy, precision, recall, dan F1-score."
+            """
+            Visualisasi overall model performance merangkum performa model berdasarkan metrik accuracy, precision,
+            recall, dan F1-score. Accuracy menunjukkan persentase prediksi yang benar secara keseluruhan. Precision
+            menunjukkan ketepatan model saat memprediksi suatu kelas. Recall menunjukkan kemampuan model dalam
+            menemukan seluruh data yang benar pada kelas tertentu. F1-score merupakan keseimbangan antara precision
+            dan recall.
+
+            Insight dari hasil ini adalah model memiliki performa yang cukup seimbang karena nilai setiap metrik
+            berada pada tingkat yang tinggi. Hal ini menunjukkan bahwa model tidak hanya akurat secara umum, tetapi
+            juga cukup konsisten dalam mengenali berbagai kategori sampah. Dengan performa tersebut, model dapat
+            digunakan sebagai pendukung sistem klasifikasi sampah berbasis citra.
+            """
         ),
         (
             "training vs validasi akurasi .png",
             "Training vs Validation Accuracy",
-            "Grafik accuracy digunakan untuk memantau perkembangan kemampuan model dalam mempelajari pola data selama proses training berlangsung."
+            """
+            Grafik training dan validation accuracy digunakan untuk melihat perkembangan akurasi model selama proses
+            training. Training accuracy menunjukkan kemampuan model dalam mengenali data latih, sedangkan validation
+            accuracy menunjukkan kemampuan model dalam mengenali data baru yang tidak digunakan langsung pada proses
+            training.
+
+            Insight dari grafik ini adalah model mengalami peningkatan akurasi selama proses pelatihan dan mampu
+            mempertahankan performa validasi yang cukup stabil. Selisih yang tidak terlalu jauh antara training
+            accuracy dan validation accuracy menunjukkan bahwa model tidak hanya menghafal data training, tetapi
+            juga mampu melakukan generalisasi terhadap data baru.
+            """
         ),
         (
             "Training vs Validation  loss.png",
             "Training vs Validation Loss",
-            "Grafik loss menunjukkan tingkat kesalahan model selama proses training dan validation."
+            """
+            Grafik loss menunjukkan tingkat kesalahan model selama proses training dan validation. Semakin rendah
+            nilai loss, maka semakin kecil kesalahan model dalam melakukan prediksi. Training loss digunakan untuk
+            melihat kesalahan pada data latih, sedangkan validation loss digunakan untuk melihat kesalahan pada data
+            validasi.
+
+            Insight dari grafik ini adalah penurunan loss menunjukkan bahwa model berhasil belajar dari data secara
+            bertahap. Jika training loss dan validation loss sama-sama menurun dan tidak memiliki jarak yang terlalu
+            besar, maka model dapat dikatakan cukup stabil. Grafik ini juga membantu mendeteksi potensi overfitting
+            apabila training loss terus turun tetapi validation loss meningkat.
+            """
         ),
         (
             "Performa perkategori sampah.png",
             "Performa per Kategori Sampah",
-            "Grafik performa per kategori menunjukkan kemampuan model dalam mengklasifikasikan setiap jenis sampah secara lebih rinci."
+            """
+            Grafik performa per kategori menunjukkan kemampuan model dalam mengklasifikasikan masing-masing jenis
+            sampah. Visualisasi ini penting karena akurasi keseluruhan saja belum cukup untuk mengetahui apakah semua
+            kelas dikenali dengan baik oleh model.
+
+            Insight dari grafik ini adalah beberapa kategori sampah dapat diklasifikasikan dengan sangat baik,
+            sedangkan kategori lain masih memiliki performa yang lebih rendah. Kelas dengan performa rendah biasanya
+            disebabkan oleh jumlah data yang kurang seimbang, kualitas gambar yang kurang baik, atau kemiripan objek
+            dengan kelas lain. Hasil ini dapat digunakan sebagai dasar untuk memperbaiki dataset pada kategori yang
+            masih lemah.
+            """
         ),
         (
             "perbandingan validasi akurasi .png",
             "Perbandingan Validasi Akurasi",
-            "Pada tahap validasi, model EfficientNetB0 memperoleh akurasi sebesar 93.11%, lebih tinggi dibandingkan ResNet50 yang mencapai 91.78% ."
+            """
+            Pada tahap validasi, model EfficientNetB0 memperoleh akurasi sebesar 93.11%, lebih tinggi dibandingkan
+            ResNet50 yang mencapai 91.78%. Validasi akurasi digunakan untuk mengukur kemampuan model dalam mengenali
+            data baru selama proses evaluasi.
+
+            Insight dari hasil ini adalah EfficientNetB0 memiliki kemampuan generalisasi yang lebih baik dibandingkan
+            ResNet50 pada data validasi. Artinya, EfficientNetB0 lebih stabil dalam mengenali pola visual sampah yang
+            tidak secara langsung digunakan pada proses training.
+            """
         ),
         (
             "perbandingan training akurasi .png",
             "Perbandingan Training Akurasi",
-            "Pada data training, EfficientNetB0 memperoleh akurasi sebesar 96.53%, sedangkan ResNet50 mencapai 95.58%."
+            """
+            Pada data training, EfficientNetB0 memperoleh akurasi sebesar 96.53%, sedangkan ResNet50 mencapai 95.58%.
+            Training accuracy menunjukkan seberapa baik model mempelajari pola dari data latih.
+
+            Insight dari hasil ini adalah EfficientNetB0 mampu mempelajari pola visual pada dataset training dengan
+            sedikit lebih baik dibandingkan ResNet50. Performa training yang tinggi menunjukkan bahwa model dapat
+            menangkap ciri penting dari gambar sampah, seperti bentuk, warna, tekstur, dan karakteristik objek.
+            """
         ),
         (
             "validasi mae .png",
             "Perbandingan Validation MAE",
-            "Nilai Validation MAE pada EfficientNetB0 sebesar 0.0091, lebih rendah dibandingkan ResNet50 yaitu 0.0129."
+            """
+            Nilai Validation MAE pada EfficientNetB0 sebesar 0.0091, lebih rendah dibandingkan ResNet50 yaitu 0.0129.
+            MAE digunakan untuk melihat rata-rata tingkat kesalahan model dalam melakukan prediksi.
+
+            Insight dari hasil ini adalah EfficientNetB0 memiliki tingkat kesalahan validasi yang lebih kecil
+            dibandingkan ResNet50. Semakin rendah nilai MAE, maka semakin baik model dalam menghasilkan prediksi
+            yang mendekati label sebenarnya.
+            """
         ),
         (
             "training mae.png",
             "Perbandingan Training MAE",
-            "Pada tahap training, EfficientNetB0 memperoleh nilai MAE sebesar 0.0064, sedangkan ResNet50 sebesar 0.0102."
+            """
+            Pada tahap training, EfficientNetB0 memperoleh nilai MAE sebesar 0.0064, sedangkan ResNet50 sebesar 0.0102.
+            Nilai ini menunjukkan bahwa kesalahan prediksi EfficientNetB0 pada data training lebih rendah dibandingkan
+            model pembanding.
+
+            Insight dari hasil ini adalah EfficientNetB0 lebih efektif dalam mempelajari karakteristik gambar pada
+            data latih. MAE yang rendah menunjukkan bahwa model memiliki prediksi yang lebih konsisten dan kesalahan
+            klasifikasi yang lebih kecil.
+            """
         ),
         (
             "tes akurasi .png",
             "Perbandingan Test Akurasi",
-            "Pada tahap pengujian akhir, EfficientNetB0 memperoleh akurasi sebesar 93.33%, sedangkan ResNet50 mencapai 92.89%."
+            """
+            Pada tahap pengujian akhir, EfficientNetB0 memperoleh akurasi sebesar 93.33%, sedangkan ResNet50 mencapai
+            92.89%. Test accuracy digunakan untuk mengevaluasi performa model pada data yang benar-benar tidak
+            digunakan selama proses training maupun validasi.
+
+            Insight dari hasil ini adalah EfficientNetB0 tetap unggul pada data pengujian. Hal ini menunjukkan bahwa
+            model tidak hanya baik saat training, tetapi juga mampu mempertahankan performanya pada data baru.
+            Dengan demikian, EfficientNetB0 lebih layak digunakan sebagai model utama pada dashboard klasifikasi
+            sampah ini.
+            """
         ),
         (
             "tes mae.png",
             "Perbandingan Test MAE",
-            "Pada data pengujian, EfficientNetB0 kembali menunjukkan performa terbaik dengan nilai MAE sebesar 0.0086, lebih rendah dibandingkan ResNet50 sebesar 0.0113."
+            """
+            Pada data pengujian, EfficientNetB0 menunjukkan performa terbaik dengan nilai MAE sebesar 0.0086,
+            lebih rendah dibandingkan ResNet50 sebesar 0.0113. Nilai MAE yang rendah menunjukkan bahwa rata-rata
+            kesalahan prediksi model relatif kecil.
+
+            Insight dari hasil ini adalah EfficientNetB0 lebih akurat dan stabil dalam melakukan prediksi terhadap
+            data uji. Hal ini memperkuat bahwa model tersebut memiliki performa yang lebih baik dibandingkan ResNet50
+            untuk kasus klasifikasi citra sampah.
+            """
         ),
         (
             "Distribusi Jumlah Gambar per Kelas.png",
             "Distribusi Jumlah Gambar per Kelas",
-            "Grafik distribusi dataset menunjukkan jumlah gambar pada setiap kategori sampah yang digunakan dalam proses training model."
+            """
+            Grafik distribusi dataset menunjukkan jumlah gambar pada setiap kategori sampah yang digunakan dalam
+            proses training model. Distribusi data sangat penting karena jumlah data yang tidak seimbang dapat
+            mempengaruhi kemampuan model dalam mengenali setiap kelas.
+
+            Insight dari grafik ini adalah kelas dengan jumlah gambar lebih banyak cenderung lebih mudah dipelajari
+            oleh model, sedangkan kelas dengan jumlah gambar lebih sedikit berpotensi memiliki performa klasifikasi
+            yang lebih rendah. Oleh karena itu, pemerataan jumlah data antar kelas dapat membantu meningkatkan
+            performa model secara keseluruhan.
+            """
         ),
         (
             "Contoh Gambar Sampah per Kelas.png",
             "Contoh Gambar Sampah per Kelas",
-            "Visualisasi contoh gambar membantu memahami karakteristik visual dari setiap kategori sampah."
+            """
+            Visualisasi contoh gambar per kelas digunakan untuk memahami karakteristik visual dari setiap kategori
+            sampah. Contoh gambar ini membantu melihat perbedaan bentuk, warna, tekstur, dan tampilan objek pada
+            masing-masing kelas.
+
+            Insight dari visualisasi ini adalah beberapa kelas memiliki ciri visual yang mudah dibedakan, sedangkan
+            beberapa kelas lain tampak mirip satu sama lain. Kemiripan visual tersebut dapat menjadi penyebab
+            kesalahan prediksi, terutama pada kategori sampah dengan bentuk atau bahan yang hampir sama.
+            """
         ),
         (
             "contoh hasil data augmentasion.png",
             "Contoh Hasil Data Augmentation",
-            "Data augmentation digunakan untuk memperbanyak variasi data training agar model lebih general dan tidak hanya menghafal gambar tertentu."
+            """
+            Data augmentation digunakan untuk memperbanyak variasi data training dengan melakukan transformasi gambar,
+            seperti rotasi, perubahan posisi, zoom, atau perubahan pencahayaan. Teknik ini membantu model agar tidak
+            hanya menghafal gambar asli.
+
+            Insight dari visualisasi ini adalah augmentation membuat model lebih kuat dalam menghadapi variasi gambar
+            yang mungkin muncul pada kondisi nyata. Dengan adanya augmentation, model dapat belajar mengenali objek
+            sampah meskipun posisi, ukuran, atau pencahayaannya berbeda.
+            """
         ),
         (
             "GAMBAR BLUR.png",
             "Analisis Gambar Blur",
-            "Analisis blur digunakan untuk mengevaluasi kualitas gambar dalam dataset sebelum digunakan pada proses training model klasifikasi."
+            """
+            Analisis blur digunakan untuk mengevaluasi tingkat keburaman gambar dalam dataset. Gambar yang terlalu
+            buram dapat menyulitkan model dalam mengenali detail objek, seperti tepi, tekstur, atau bentuk utama
+            sampah.
+
+            Insight dari analisis ini adalah kualitas gambar sangat mempengaruhi performa klasifikasi. Jika terdapat
+            banyak gambar blur, maka model dapat mengalami kesulitan dalam membedakan kelas yang memiliki bentuk
+            serupa. Oleh karena itu, gambar dengan kualitas sangat rendah perlu diperbaiki, diganti, atau dipisahkan
+            dari dataset training.
+            """
         ),
         (
             "visual brighnes per kelas.png",
             "Visual Brightness per Kelas",
-            "Visualisasi brightness menunjukkan tingkat kecerahan gambar pada setiap kategori sampah dalam dataset."
+            """
+            Visualisasi brightness menunjukkan tingkat kecerahan gambar pada setiap kategori sampah. Perbedaan
+            brightness dapat terjadi karena kondisi pencahayaan saat pengambilan gambar berbeda-beda.
+
+            Insight dari visualisasi ini adalah gambar yang terlalu gelap atau terlalu terang dapat mengurangi
+            kemampuan model dalam mengenali objek. Model akan lebih optimal apabila dataset memiliki variasi
+            pencahayaan yang cukup, tetapi tetap mempertahankan objek utama agar terlihat jelas.
+            """
         ),
         (
             "visual edge perkelas.png",
             "Visual Edge per Kelas",
-            "Visual edge digunakan untuk menampilkan pola tepi objek pada setiap kategori sampah."
+            """
+            Visual edge digunakan untuk menampilkan pola tepi objek pada setiap kategori sampah. Tepi objek membantu
+            model dalam memahami bentuk dasar dari suatu sampah, seperti botol, kaleng, kardus, atau kantong plastik.
+
+            Insight dari visualisasi ini adalah kelas dengan bentuk tepi yang jelas cenderung lebih mudah dikenali
+            oleh model. Sebaliknya, objek dengan tepi yang tidak jelas atau tertutup background dapat menyebabkan
+            model kesulitan dalam membedakan kategori sampah.
+            """
         ),
         (
             "VISUALISASI SHARPNESS,PER KELAS.png",
             "Visualisasi Sharpness per Kelas",
-            "Analisis sharpness digunakan untuk mengukur tingkat ketajaman gambar dalam dataset citra sampah."
+            """
+            Analisis sharpness digunakan untuk mengukur tingkat ketajaman gambar dalam dataset citra sampah.
+            Gambar yang tajam memiliki detail visual yang lebih jelas, sedangkan gambar yang kurang tajam dapat
+            mengurangi informasi penting yang dibutuhkan model.
+
+            Insight dari visualisasi ini adalah sharpness yang baik membantu model mengenali detail objek secara lebih
+            akurat. Apabila terdapat kelas dengan tingkat sharpness rendah, maka kelas tersebut berpotensi memiliki
+            performa klasifikasi yang lebih rendah. Oleh karena itu, kualitas gambar perlu diperhatikan agar model
+            dapat menghasilkan prediksi yang lebih stabil.
+            """
         )
     ]
-
     for filename, caption, description in image_sections:
         show_image(filename, caption, description)
 
