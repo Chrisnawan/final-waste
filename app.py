@@ -56,20 +56,17 @@ div[data-testid="stMarkdownContainer"] {
 # ==========================================
 @st.cache_resource
 def load_model():
-    import tensorflow as tf
+    import keras  # langsung import keras 3, bukan lewat tf.keras
 
     if not MODEL_PATH.exists():
         st.error(f"File model tidak ditemukan: {MODEL_PATH}")
         st.stop()
 
-    return tf.keras.models.load_model(
-        str(MODEL_PATH),
-        compile=False
-    )
-
-
-model = load_model()
-
+    try:
+        return keras.models.load_model(str(MODEL_PATH), compile=False)
+    except Exception as e:
+        st.error(f"Gagal memuat model: {e}")
+        st.stop()
 # ==========================================
 # LOAD CLASS NAMES
 # ==========================================
@@ -178,22 +175,17 @@ def show_image(filename, caption, description=""):
 # PREDICTION FUNCTION KERAS
 # ==========================================
 def predict_image(image):
+    import numpy as np
     image = image.convert("RGB")
     image = image.resize((IMG_SIZE, IMG_SIZE))
-
-    img_array = np.array(image).astype(np.float32)
-
-    # Sesuaikan dengan training model
-    img_array = img_array / 255.0
-
+    img_array = np.array(image).astype(np.float32) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
-
+    
     prediction = model.predict(img_array, verbose=0)
-
     predicted_index = int(np.argmax(prediction[0]))
     predicted_class = class_names[predicted_index]
     confidence = float(np.max(prediction[0]) * 100)
-
+    
     return predicted_class, confidence
 
 # ==========================================
