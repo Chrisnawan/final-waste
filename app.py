@@ -395,7 +395,7 @@ with tab1:
             """
         ),
         (
-            "validasi mae .png",
+            "validasi mae.png",
             "Perbandingan Validation MAE",
             """
             Nilai Validation MAE pada EfficientNetB0 sebesar 0.0091, lebih rendah dibandingkan ResNet50 yaitu 0.0129.
