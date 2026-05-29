@@ -370,7 +370,7 @@ with tab1:
             """
         ),
         (
-            "perbandingan validasi akurasi .png",
+            "VALIDASI AKURASI.png",
             "Perbandingan Validasi Akurasi",
             """
             Pada tahap validasi, model EfficientNetB0 memperoleh akurasi sebesar 93.11%, lebih tinggi dibandingkan
@@ -383,7 +383,7 @@ with tab1:
             """
         ),
         (
-            "perbandingan training akurasi .png",
+            "training akurasi .png",
             "Perbandingan Training Akurasi",
             """
             Pada data training, EfficientNetB0 memperoleh akurasi sebesar 96.53%, sedangkan ResNet50 mencapai 95.58%.
