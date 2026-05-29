@@ -253,14 +253,14 @@ with tab1:
 
     col1, col2, col3, col4 = st.columns(4)
 
-    col1.metric("Train Accuracy", "97.92%")
-    col2.metric("Validation Accuracy", "94.44%")
-    col3.metric("Test Accuracy", "95.11%")
-    col4.metric("Test MAE", "0.0076")
+    col1.metric("Train Accuracy", "96.53%")
+    col2.metric("Validation Accuracy", "93.11%")
+    col3.metric("Test Accuracy", "93.33%")
+    col4.metric("Test MAE", "0.0083")
 
     metric_df = pd.DataFrame({
         "Dataset": ["Train", "Validation", "Test"],
-        "Accuracy": [97.92, 94.44, 95.11],
+        "Accuracy": [96.53, 93.11, 93.33],
     })
 
     st.dataframe(metric_df, use_container_width=True)
@@ -311,32 +311,31 @@ with tab1:
         (
             "perbandingan validasi akurasi .png",
             "Perbandingan Validasi Akurasi",
-            "Pada tahap validasi, EfficientNetB0 memperoleh akurasi sebesar 94.44%, lebih tinggi dibandingkan ResNet50 yang mencapai 91.78%."
-        ),
+            "Pada tahap validasi, model EfficientNetB0 memperoleh akurasi sebesar 93.11%, lebih tinggi dibandingkan ResNet50 yang mencapai 91.78% ."
         (
             "perbandingan training akurasi .png",
             "Perbandingan Training Akurasi",
-            "Pada data training, EfficientNetB0 memperoleh akurasi sebesar 97.92%, sedangkan ResNet50 mencapai 95.58%."
+            "Pada data training, EfficientNetB0 memperoleh akurasi sebesar 96.53%, sedangkan ResNet50 mencapai 95.58%."
         ),
         (
             "validasi mae .png",
             "Perbandingan Validation MAE",
-            "Nilai Validation MAE pada EfficientNetB0 sebesar 0.0090, lebih rendah dibandingkan ResNet50 yaitu 0.0129."
+            "Nilai Validation MAE pada EfficientNetB0 sebesar 0.0091, lebih rendah dibandingkan ResNet50 yaitu 0.0129."
         ),
         (
             "training mae.png",
             "Perbandingan Training MAE",
-            "Pada tahap training, EfficientNetB0 memperoleh nilai MAE sebesar 0.0053, sedangkan ResNet50 sebesar 0.0102."
+            "Pada tahap training, EfficientNetB0 memperoleh nilai MAE sebesar 0.0064, sedangkan ResNet50 sebesar 0.0102."
         ),
         (
             "tes akurasi .png",
             "Perbandingan Test Akurasi",
-            "Pada tahap pengujian akhir, EfficientNetB0 memperoleh akurasi sebesar 95.11%, sedangkan ResNet50 mencapai 92.89%."
+            "Pada tahap pengujian akhir, EfficientNetB0 memperoleh akurasi sebesar 93.33%, sedangkan ResNet50 mencapai 92.89%."
         ),
         (
             "tes mae.png",
             "Perbandingan Test MAE",
-            "Pada data pengujian, EfficientNetB0 memperoleh nilai MAE sebesar 0.0076, lebih rendah dibandingkan ResNet50 sebesar 0.0113."
+            "Pada data pengujian, EfficientNetB0 kembali menunjukkan performa terbaik dengan nilai MAE sebesar 0.0086, lebih rendah dibandingkan ResNet50 sebesar 0.0113."
         ),
         (
             "Distribusi Jumlah Gambar per Kelas.png",
