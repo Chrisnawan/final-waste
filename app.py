@@ -186,7 +186,7 @@ def show_image(filename, caption, description=""):
                     font-size:35px;
                     line-height:2;
                     text-align:justify;
-                    color:white;
+                    color:inherit;
                     padding-top:10px;
                     margin:0;
                 ">
