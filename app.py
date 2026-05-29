@@ -355,7 +355,7 @@ with tab1:
             """
         ),
         (
-            "Performa perkategori sampah.png",
+            "pertanyaan bisnis 2 sampah paling susah di kategorikan.png",
             "Performa per Kategori Sampah",
             """
             Grafik performa per kategori menunjukkan kemampuan model dalam mengklasifikasikan masing-masing jenis
