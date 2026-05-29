@@ -57,7 +57,8 @@ div[data-testid="stMarkdownContainer"] {
 # ==========================================
 @st.cache_resource
 def load_model():
-    import tensorflow as tf
+    import keras
+    from keras import layers
 
     if not MODEL_PATH.exists():
         st.error(f"File model tidak ditemukan: {MODEL_PATH}")
@@ -65,21 +66,24 @@ def load_model():
 
     try:
         # Bangun ulang arsitektur yang sama seperti saat training
-        base_model = tf.keras.applications.EfficientNetB0(
+        base_model = keras.applications.EfficientNetB0(
             input_shape=(IMG_SIZE, IMG_SIZE, 3),
             include_top=False,
-            weights=None  # Tidak load imagenet weights
+            weights=None
         )
 
-        inputs = tf.keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
+        inputs = keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
         x = base_model(inputs, training=False)
-        x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(256, activation="relu")(x)
-        x = tf.keras.layers.BatchNormalization()(x)
-        x = tf.keras.layers.Dropout(0.3)(x)
-        outputs = tf.keras.layers.Dense(NUM_CLASSES, activation="softmax")(x)
+        x = layers.GlobalAveragePooling2D()(x)
+        x = layers.Dense(256, activation="relu")(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.Dropout(0.3)(x)
+        outputs = layers.Dense(NUM_CLASSES, activation="softmax")(x)
 
-        model = tf.keras.Model(inputs, outputs)
+        model = keras.Model(inputs, outputs)
+
+        # Build model dulu sebelum load weights (wajib di Keras 3.x)
+        model.build((None, IMG_SIZE, IMG_SIZE, 3))
 
         # Load weights dari file .h5
         model.load_weights(str(MODEL_PATH))
