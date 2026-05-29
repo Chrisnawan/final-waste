@@ -309,7 +309,7 @@ with tab1:
             """
         ),
         (
-            "overal model.png",
+            "overall.png",
             "Overall Model Performance",
             """
             Visualisasi overall model performance merangkum performa model berdasarkan metrik accuracy, precision,
@@ -581,7 +581,7 @@ with tab3:
     st.subheader("Jawaban Pertanyaan Bisnis")
 
     show_image(
-        "overal model.png",
+        "overall.png",
         "Pertanyaan Bisnis 1: Seberapa baik performa model dalam mengklasifikasikan jenis sampah berdasarkan citra?",
         """
         Visualisasi ini menunjukkan performa model EfficientNetB0 dalam mengklasifikasikan jenis sampah berdasarkan citra. Berdasarkan hasil pengujian, model memperoleh accuracy sebesar 95.11%, precision sebesar 95.02%, recall sebesar 94.88%, dan F1-score sebesar 94.95%. Nilai metrik yang tinggi menunjukkan bahwa model memiliki kemampuan yang baik dalam mengenali pola visual setiap kategori sampah serta menghasilkan prediksi yang akurat dan konsisten.
