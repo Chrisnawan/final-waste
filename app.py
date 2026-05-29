@@ -16,7 +16,7 @@ st.set_page_config(
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("model_weights.h5")
+MODEL_PATH = Path("model.weights.h5")
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 CSV_DIR = Path("[5] Csv")
