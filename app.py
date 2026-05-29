@@ -597,7 +597,7 @@ with tab3:
     )
 
     show_image(
-        "pertanyaan bisnis3.png",
+        "pertanyaan bisnis 3.png",
         "Pertanyaan Bisnis 3: Bagaimana penerapan model ini dapat meningkatkan efisiensi dan akurasi dalam proses pemilahan sampah?",
         """
         Model dapat membantu proses pemilahan sampah dengan mempercepat identifikasi jenis sampah, mengurangi human error, meningkatkan konsistensi klasifikasi, dan memberikan rekomendasi kategori tong sampah secara otomatis. Dengan performa model yang baik, sistem ini dapat mendukung penerapan smart waste management berbasis Artificial Intelligence.
