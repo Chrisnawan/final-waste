@@ -16,11 +16,12 @@ st.set_page_config(
 # ==========================================
 # PATH CONFIG
 # ==========================================
-MODEL_PATH = Path("best_model_custom.keras")
+MODEL_PATH = Path("model_weights.h5")
 CLASS_PATH = Path("class_names.txt")
 ASSET_DIR = Path("gambar")
 CSV_DIR = Path("[5] Csv")
 IMG_SIZE = 224
+NUM_CLASSES = 18
 
 # ==========================================
 # CUSTOM CSS
@@ -52,21 +53,46 @@ div[data-testid="stMarkdownContainer"] {
 """, unsafe_allow_html=True)
 
 # ==========================================
-# LOAD KERAS MODEL
+# LOAD MODEL (WEIGHTS-ONLY)
 # ==========================================
 @st.cache_resource
 def load_model():
-    import keras  # langsung import keras 3, bukan lewat tf.keras
+    import tensorflow as tf
 
     if not MODEL_PATH.exists():
         st.error(f"File model tidak ditemukan: {MODEL_PATH}")
         st.stop()
 
     try:
-        return keras.models.load_model(str(MODEL_PATH), compile=False)
+        # Bangun ulang arsitektur yang sama seperti saat training
+        base_model = tf.keras.applications.EfficientNetB0(
+            input_shape=(IMG_SIZE, IMG_SIZE, 3),
+            include_top=False,
+            weights=None  # Tidak load imagenet weights
+        )
+
+        inputs = tf.keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
+        x = base_model(inputs, training=False)
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dense(256, activation="relu")(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.Dropout(0.3)(x)
+        outputs = tf.keras.layers.Dense(NUM_CLASSES, activation="softmax")(x)
+
+        model = tf.keras.Model(inputs, outputs)
+
+        # Load weights dari file .h5
+        model.load_weights(str(MODEL_PATH))
+
+        return model
+
     except Exception as e:
         st.error(f"Gagal memuat model: {e}")
         st.stop()
+
+
+model = load_model()
+
 # ==========================================
 # LOAD CLASS NAMES
 # ==========================================
@@ -172,20 +198,21 @@ def show_image(filename, caption, description=""):
         st.warning(f"Gambar tidak ditemukan: {image_path}")
 
 # ==========================================
-# PREDICTION FUNCTION KERAS
+# PREDICTION FUNCTION
 # ==========================================
 def predict_image(image):
-    import numpy as np
     image = image.convert("RGB")
     image = image.resize((IMG_SIZE, IMG_SIZE))
+
     img_array = np.array(image).astype(np.float32) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
-    
+
     prediction = model.predict(img_array, verbose=0)
+
     predicted_index = int(np.argmax(prediction[0]))
     predicted_class = class_names[predicted_index]
     confidence = float(np.max(prediction[0]) * 100)
-    
+
     return predicted_class, confidence
 
 # ==========================================
